@@ -447,7 +447,13 @@
       font-size: 0.9rem;
     }
     #btnNo {
-      position: relative !important;
+      position: static !important;
+      left: auto !important;
+      top: auto !important;
+      transform: none !important;
+    }
+    #btnNo.dodging {
+      position: static !important;
       left: auto !important;
       top: auto !important;
     }
@@ -834,6 +840,7 @@
       btnNo.classList.remove('dodging');
       btnNo.style.left = '';
       btnNo.style.top = '';
+      btnNo.style.transform = 'none';
       dodgeHint.style.opacity = '0';
       return;
     }
