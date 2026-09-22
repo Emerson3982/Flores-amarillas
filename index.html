@@ -687,38 +687,132 @@
     </svg>`;
   }
 
-  const definitiveFlowers = isPhone
-    ? [
-        { x: 108, y: 142, size: 86, hue: -2 },
-        { x: 160, y: 122, size: 108, hue: 0 },
-        { x: 212, y: 142, size: 86, hue: 2 }
-      ]
-    : [
-        { x: 118, y: 168, size: 94, hue: -3 },
-        { x: 160, y: 148, size: 118, hue: 0 },
-        { x: 202, y: 168, size: 94, hue: 3 }
-      ];
+  const flowerConfigs = [];
+  let maxDelay = 0;
 
-  definitiveFlowers.forEach((cfg, idx) => {
-    const el = document.createElement('div');
-    el.className = 'flower';
-    el.style.setProperty('--fx', cfg.x + 'px');
-    el.style.setProperty('--fy', cfg.y + 'px');
-    el.style.setProperty('--fsize', cfg.size + 'px');
-    el.style.setProperty('--frot', '0deg');
-    el.style.setProperty('--fdelay', (0.15 + idx * 0.12) + 's');
-    el.innerHTML = flowerMarkup(cfg.hue, idx);
-    field.appendChild(el);
+  if (isPhone) {
+    const phoneScale = 0.68;
+    flowerConfigs.push({ angle: 0, radius: 8 * phoneScale, size: 22 * phoneScale, layer: 2, midFill: true });
+    flowerConfigs.push({ angle: -14 * phoneScale, radius: 12 * phoneScale, size: 20 * phoneScale, layer: 2, midFill: true });
+    flowerConfigs.push({ angle: 14 * phoneScale, radius: 12 * phoneScale, size: 20 * phoneScale, layer: 2, midFill: true });
+    flowerConfigs.push({ angle: 0, radius: 10 * phoneScale, size: 18 * phoneScale, layer: 2, topAccent: true });
+
+    const backCount = 8;
+    const backMaxAngle = 46;
+    for (let i = 0; i < backCount; i++) {
+      const t = i / (backCount - 1);
+      const angle = -backMaxAngle + t * (backMaxAngle * 2) + (Math.random() * 2.6 - 1.3);
+      const radius = 42 + (Math.random() * 4 - 2);
+      const taper = Math.cos((angle / backMaxAngle) * (Math.PI / 2.1));
+      const size = 25 + 7 * taper + (Math.random() * 2 - 1);
+      flowerConfigs.push({ angle, radius: radius * phoneScale, size: size * phoneScale, layer: 0 });
+    }
+
+    const midCount = 7;
+    const midMaxAngle = 42;
+    for (let i = 0; i < midCount; i++) {
+      const t = i / (midCount - 1);
+      const angle = -midMaxAngle + t * (midMaxAngle * 2) + (Math.random() * 2.2 - 1.1);
+      const radius = 56 + (Math.random() * 4 - 2);
+      const taper = Math.cos((angle / midMaxAngle) * (Math.PI / 2.1));
+      const size = 28 + 10 * taper + (Math.random() * 2 - 1);
+      flowerConfigs.push({ angle, radius: radius * phoneScale, size: size * phoneScale, layer: 1 });
+    }
+
+    const frontCount = 6;
+    const frontMaxAngle = 36;
+    for (let i = 0; i < frontCount; i++) {
+      const t = i / (frontCount - 1);
+      const angle = -frontMaxAngle + t * (frontMaxAngle * 2) + (Math.random() * 1.8 - 0.9);
+      const radius = 68 + (Math.random() * 4 - 2);
+      const taper = Math.cos((angle / frontMaxAngle) * (Math.PI / 2.1));
+      const size = 32 + 12 * taper + (Math.random() * 2 - 1);
+      flowerConfigs.push({ angle, radius: radius * phoneScale, size: size * phoneScale, layer: 2 });
+    }
+
+    flowerConfigs.push({ angle: 0, radius: 15 * phoneScale, size: 24 * phoneScale, layer: 2 });
+  } else {
+    flowerConfigs.push({ angle: 0, radius: 8, size: 22, layer: 2, midFill: true });
+    flowerConfigs.push({ angle: -12, radius: 12, size: 20, layer: 2, midFill: true });
+    flowerConfigs.push({ angle: 12, radius: 12, size: 20, layer: 2, midFill: true });
+    flowerConfigs.push({ angle: 0, radius: 10, size: 18, layer: 2, topAccent: true });
+
+    const backCount = 11;
+    const backMaxAngle = 58;
+    for (let i = 0; i < backCount; i++) {
+      const t = i / (backCount - 1);
+      const angle = -backMaxAngle + t * (backMaxAngle * 2) + (Math.random() * 3 - 1.5);
+      const radius = 62 + (Math.random() * 4 - 2);
+      const taper = Math.cos((angle / backMaxAngle) * (Math.PI / 2.1));
+      const size = 32 + 8 * taper + (Math.random() * 2 - 1);
+      flowerConfigs.push({ angle, radius, size, layer: 0 });
+    }
+
+    const midCount = 10;
+    const midMaxAngle = 53;
+    for (let i = 0; i < midCount; i++) {
+      const t = i / (midCount - 1);
+      const angle = -midMaxAngle + t * (midMaxAngle * 2) + (Math.random() * 3 - 1.5);
+      const radius = 84 + (Math.random() * 4 - 2);
+      const taper = Math.cos((angle / midMaxAngle) * (Math.PI / 2.1));
+      const size = 36 + 14 * taper + (Math.random() * 2 - 1);
+      flowerConfigs.push({ angle, radius, size, layer: 1 });
+    }
+
+    const frontCount = 10;
+    const frontMaxAngle = 47;
+    for (let i = 0; i < frontCount; i++) {
+      const t = i / (frontCount - 1);
+      const angle = -frontMaxAngle + t * (frontMaxAngle * 2) + (Math.random() * 3 - 1.5);
+      const radius = 106 + (Math.random() * 4 - 2);
+      const taper = Math.cos((angle / frontMaxAngle) * (Math.PI / 2.1));
+      const size = 44 + 18 * taper + (Math.random() * 2 - 1);
+      flowerConfigs.push({ angle, radius, size, layer: 2 });
+    }
+
+    flowerConfigs.push({ angle: 0, radius: 18, size: 28, layer: 2 });
+  }
+
+  flowerConfigs.forEach((cfg) => {
+    if (cfg.topAccent) { cfg.radius = 10; cfg.size = 22; }
+    if (cfg.midFill) { cfg.radius += 4; cfg.size += 2; }
+    if (Math.abs(cfg.angle) < 18 && !cfg.topAccent && !cfg.midFill) { cfg.radius += 14; cfg.size += 6; }
   });
 
-  const bow = document.createElement('div');
-  bow.className = 'bouquet-bow';
-  bow.innerHTML = '<span class="bow-l"></span><span class="bow-r"></span><span class="bow-knot"></span>';
-  field.appendChild(bow);
+  const layerMeta = {
+    0: { maxAngle: isPhone ? 46 : 58, start: 0 },
+    1: { maxAngle: isPhone ? 42 : 53, start: 0.24 },
+    2: { maxAngle: isPhone ? 36 : 47, start: 0.48 }
+  };
 
-  const finalTaglineDelay = 0.9;
-  document.querySelector('.tagline').style.setProperty('--tagline-delay', finalTaglineDelay + 's');
-  document.querySelector('.cta-wrap').style.setProperty('--cta-delay', (finalTaglineDelay + 0.45) + 's');
+  let flowerIndex = 0;
+  flowerConfigs.forEach((cfg) => {
+    const rad = (cfg.angle * Math.PI) / 180;
+    const x = apexX + cfg.radius * Math.sin(rad);
+    const y = cfg.topAccent ? apexY - 82 : cfg.midFill ? apexY - 54 : apexY - cfg.radius * Math.cos(rad);
+    const rot = cfg.topAccent || cfg.midFill ? '0' : (cfg.angle * 0.3 + (Math.random() * 10 - 5)).toFixed(1);
+    const hueOffset = (Math.random() * 8 - 4).toFixed(1);
+    const meta = layerMeta[cfg.layer];
+    const withinLayerT = (cfg.angle + meta.maxAngle) / (meta.maxAngle * 2);
+    const delay = (BOUQUET_START + meta.start + withinLayerT * 0.26 + Math.random() * 0.03).toFixed(2);
+    maxDelay = Math.max(maxDelay, parseFloat(delay));
+
+    const el = document.createElement('div');
+    el.className = 'flower';
+    el.style.setProperty('--fx', x + 'px');
+    el.style.setProperty('--fy', y + 'px');
+    el.style.setProperty('--fsize', cfg.size + 'px');
+    el.style.setProperty('--frot', rot + 'deg');
+    el.style.setProperty('--fdelay', delay + 's');
+    el.innerHTML = flowerMarkup(hueOffset, flowerIndex);
+    field.appendChild(el);
+    flowerIndex++;
+  });
+
+  const taglineDelay = maxDelay + 0.75;
+  const ctaDelay = taglineDelay + 0.5;
+  document.querySelector('.tagline').style.setProperty('--tagline-delay', taglineDelay + 's');
+  document.querySelector('.cta-wrap').style.setProperty('--cta-delay', ctaDelay + 's');
 
   const scenes = {
     bouquet: document.getElementById('scene-bouquet'),
