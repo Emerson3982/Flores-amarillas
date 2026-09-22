@@ -62,12 +62,13 @@
 
   .stage {
     position: relative;
-    width: 100%;
+    width: min(100%, 480px);
     max-width: 480px;
     min-height: min(720px, 92vh);
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
   }
 
   .scene {
@@ -382,13 +383,16 @@
     body {
       padding: max(10px, env(safe-area-inset-top)) 10px max(18px, env(safe-area-inset-bottom));
       background: radial-gradient(120% 120% at 50% 0%, var(--cream-2) 0%, var(--cream) 58%);
+      overflow-x: hidden;
     }
     .stage {
       max-width: 100%;
       min-height: calc(100dvh - 12px);
       width: 100%;
+      overflow: hidden;
     }
     .scene {
+      width: 100%;
       padding: 6px 4px 12px;
     }
     .kicker {
@@ -404,17 +408,17 @@
       max-width: 25ch;
     }
     .bouquet-stage {
-      width: min(280px, 84vw);
-      height: 210px;
+      width: min(82vw, 320px);
+      height: clamp(200px, 52vw, 250px);
       margin: 0 auto 0;
     }
     .bouquet-glow {
-      width: 180px;
-      height: 180px;
+      width: min(70vw, 220px);
+      height: min(70vw, 220px);
     }
     .wrap-cone {
-      width: 128px;
-      bottom: -8px;
+      width: min(46vw, 150px);
+      bottom: -6px;
     }
     .tagline {
       font-size: 0.9rem;
@@ -424,15 +428,20 @@
     }
     .cta-wrap {
       margin-top: 16px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
     }
     .btn-row {
       flex-direction: column;
       gap: 10px;
       height: auto;
       margin-top: 18px;
+      width: min(100%, 240px);
+      margin-inline: auto;
     }
     .btn-primary, .btn-ghost {
-      width: min(100%, 200px);
+      width: 100%;
       min-height: 48px;
       padding: 11px 18px;
       font-size: 0.9rem;
@@ -470,11 +479,12 @@
       padding-right: 2px;
     }
     .bouquet-stage {
-      width: min(250px, 78vw);
-      height: 190px;
+      width: min(78vw, 260px);
+      height: clamp(180px, 48vw, 210px);
+      margin-top: 4px;
     }
     .bouquet-bow {
-      top: 90px;
+      top: 82px;
       width: 74px;
       height: 40px;
     }
@@ -485,9 +495,10 @@
     }
     .tagline {
       max-width: 22ch;
+      font-size: 0.92rem;
     }
     .btn-primary, .btn-ghost {
-      width: min(100%, 180px);
+      width: min(100%, 200px);
       min-height: 46px;
       padding: 11px 16px;
       font-size: 0.9rem;
@@ -691,15 +702,25 @@
   let maxDelay = 0;
 
   if (isPhone) {
-    const phoneScale = 0.46;
-    flowerConfigs.push({ angle: 0, radius: 10 * phoneScale, size: 22 * phoneScale, layer: 2, midFill: true });
-    flowerConfigs.push({ angle: -18 * phoneScale, radius: 12 * phoneScale, size: 20 * phoneScale, layer: 2, midFill: true });
-    flowerConfigs.push({ angle: 18 * phoneScale, radius: 12 * phoneScale, size: 20 * phoneScale, layer: 2, midFill: true });
-    flowerConfigs.push({ angle: 0, radius: 12 * phoneScale, size: 18 * phoneScale, layer: 2, topAccent: true });
+    const phoneScale = Math.min(stageWidth / 260, stageHeight / 210);
+    const cx = stageWidth / 2;
+    const cy = stageHeight * 0.58;
 
-    flowerConfigs.push({ angle: -32, radius: 24 * phoneScale, size: 18 * phoneScale, layer: 1 });
-    flowerConfigs.push({ angle: 32, radius: 24 * phoneScale, size: 18 * phoneScale, layer: 1 });
-    flowerConfigs.push({ angle: 0, radius: 30 * phoneScale, size: 16 * phoneScale, layer: 0 });
+    const phoneFlowers = [
+      { x: cx - 42, y: cy - 20, size: 56 },
+      { x: cx, y: cy - 42, size: 70 },
+      { x: cx + 42, y: cy - 20, size: 56 },
+      { x: cx - 18, y: cy + 16, size: 48 },
+      { x: cx + 18, y: cy + 16, size: 48 },
+      { x: cx, y: cy + 30, size: 40 }
+    ];
+
+    phoneFlowers.forEach((cfg, idx) => {
+      const scaledSize = cfg.size * phoneScale;
+      const movedX = cx + (cfg.x - cx) * phoneScale;
+      const movedY = cy + (cfg.y - cy) * phoneScale;
+      flowerConfigs.push({ angle: 0, radius: 0, size: scaledSize, layer: 2, midFill: true, customX: movedX, customY: movedY, fixedRot: 0, hue: idx % 2 === 0 ? -2 : 2 });
+    });
   } else {
     flowerConfigs.push({ angle: 0, radius: 8, size: 22, layer: 2, midFill: true });
     flowerConfigs.push({ angle: -12, radius: 12, size: 20, layer: 2, midFill: true });
@@ -757,10 +778,10 @@
   let flowerIndex = 0;
   flowerConfigs.forEach((cfg) => {
     const rad = (cfg.angle * Math.PI) / 180;
-    const x = apexX + cfg.radius * Math.sin(rad);
-    const y = cfg.topAccent ? apexY - 82 : cfg.midFill ? apexY - 54 : apexY - cfg.radius * Math.cos(rad);
-    const rot = cfg.topAccent || cfg.midFill ? '0' : (cfg.angle * 0.3 + (Math.random() * 10 - 5)).toFixed(1);
-    const hueOffset = (Math.random() * 8 - 4).toFixed(1);
+    const x = cfg.customX ?? (apexX + cfg.radius * Math.sin(rad));
+    const y = cfg.customY ?? (cfg.topAccent ? apexY - 82 : cfg.midFill ? apexY - 54 : apexY - cfg.radius * Math.cos(rad));
+    const rot = cfg.fixedRot ?? (cfg.topAccent || cfg.midFill ? '0' : (cfg.angle * 0.3 + (Math.random() * 10 - 5)).toFixed(1));
+    const hueOffset = cfg.hue ?? ((Math.random() * 8 - 4).toFixed(1));
     const meta = layerMeta[cfg.layer];
     const withinLayerT = (cfg.angle + meta.maxAngle) / (meta.maxAngle * 2);
     const delay = (BOUQUET_START + meta.start + withinLayerT * 0.26 + Math.random() * 0.03).toFixed(2);
